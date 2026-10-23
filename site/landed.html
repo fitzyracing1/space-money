@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>space-money: Landed-cost route search</title>
+<link rel="stylesheet" href="style.css?v=6">
+<style>
+.comp{border:2px solid #f5b942;border-radius:10px;padding:12px 14px;background:rgba(245,185,66,.08)}
+.comp li{margin:.35em 0}
+label{display:block;margin:.5rem 0 .2rem;color:var(--mut);font-size:.9rem}
+input,select,button{font-size:16px;padding:10px;border-radius:8px;width:100%;box-sizing:border-box}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.6rem}
+.route{border-top:1px solid rgba(255,255,255,.12);padding:12px 0}
+.route h3{margin:0;font-size:1.05rem}
+.tot{font-size:1.3rem;font-weight:700}
+.lit{color:#3ddc97;font-weight:600}.dark{color:var(--mut);font-weight:600}
+.chk{color:#f5b942;font-weight:600}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;font-size:.9rem}
+details{margin-top:.4rem;font-size:.85rem;color:var(--mut)}
+#matches button{width:auto;margin:3px;font-size:14px;padding:6px 10px}
+nav a{margin-right:12px}
+</style>
+</head>
+<body>
+<div class="stars" aria-hidden="true"></div>
+<div class="banner" role="alert">⚠️ Informational only. Not legal, tax or customs advice. Confirm with a licensed customs broker.</div>
+<header>
+  <h1>Landed-cost route search</h1>
+  <p class="sub">Pick a product, an origin (or any) and a destination. See the cheapest <b>legal</b> routes: export taxes at origin + import duty (MFN or trade-agreement rate) + import VAT.</p>
+  <nav class="small"><a href="index.html">Home</a><a href="feed.html">Tariff Feed</a></nav>
+</header>
+<main>
+  <section class="panel">
+    <label for="q">Product: HS code or words (e.g. 6109, cotton t-shirts)</label>
+    <input id="q" autocomplete="off" placeholder="6109 or t-shirts">
+    <div id="matches"></div>
+    <div class="grid">
+      <div><label for="origin">Origin</label><select id="origin"><option value="any">Any (rank all)</option></select></div>
+      <div><label for="dest">Destination</label><select id="dest"><option value="US">United States</option><option value="PT">Portugal (EU)</option><option value="UK">United Kingdom</option><option value="SPACE">Space (orbit, launch cost)</option></select></div>
+      <div><label for="val">Goods value</label><input id="val" type="number" min="0" value="100" inputmode="decimal"></div>
+      <div><label for="fr">Freight + insurance</label><input id="fr" type="number" min="0" value="0" inputmode="decimal"></div>
+    </div>
+    <fieldset style="border:1px solid rgba(255,255,255,.15);border-radius:8px;margin-top:.6rem"><legend>Compare to my plan</legend>
+      <div class="grid">
+        <div><label for="porigin">My planned origin</label><select id="porigin"><option value="">(none)</option></select></div>
+        <div><label for="qty">Quantity (units)</label><input id="qty" type="number" min="0" inputmode="decimal"></div>
+        <div><label for="kg">Weight (kg)</label><input id="kg" type="number" min="0" inputmode="decimal"></div>
+      </div>
+      <p class="small">Uses the product, destination, value and freight above. Savings show beside each route.</p>
+    </fieldset>
+    <label><input id="crypto" type="checkbox" style="width:auto"> Seller takes crypto (placeholder)</label>
+    <p id="cryptonote" class="small" hidden></p>
+  </section>
+  <section class="panel" aria-live="polite"><div id="plan"></div><h2 id="title">Routes</h2><div id="out" class="small">Loading data…</div></section>
+  <section class="panel comp"><h2>Compliance</h2><ul id="comp"></ul></section>
+  <section class="panel small"><h2>Data and sources</h2><div id="src"></div>
+    <p>"check source" means the rate is not in our official snapshot. We never guess a rate.</p></section>
+</main>
+<script src="landed.js?v=2"></script>
+</body>
+</html>

@@ -23,5 +23,7 @@ jobs:
         run: python3 scripts/update_feed.py --self-test
       - name: HTS Merkle root reproducible from data/hts
         run: python3 scripts/hts_merkle.py && git diff --exit-code data/hts/merkle
+      - name: landed.json well-formed (landed.html data)
+        run: python3 scripts/check_landed.py
       - name: End-to-end demo (local anvil)
         run: ./scripts/demo.sh
