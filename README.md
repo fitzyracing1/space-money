@@ -36,13 +36,27 @@ treasury SPACE: 3200
 ## Tariff data source
 `scripts/feed_oracle.py` loads `data/hts_sample.csv` into the oracle with one `setRates` batch. The sample is from the **U.S. International Trade Commission (USITC) Harmonized Tariff Schedule of the United States**, through its public REST API (`https://hts.usitc.gov/reststop/search?keyword=…`), using keywords telescope, satellite, rocket, solar cells, gyroscope, lithium batteries and spacecraft. Only the "General" (MFN) column is used, and only rows that are `Free` or a plain ad-valorem `%` (specific/compound duties are skipped). The snapshot was taken on 2026-10-22; `--refresh` pulls it again. The data is for demonstration and is not customs advice.
 
-## Deploying to Sepolia (not done)
-No deployer key exists for this repo, and none was created. A Sepolia deploy would need:
+## Sepolia testnet deployment
+Deployed on **Sepolia testnet only** (chain id 11155111) on 2026-10-22. Test tokens only, no real value. Contracts are not verified on Etherscan. Full record: [`deployments/sepolia.json`](deployments/sepolia.json).
+
+| Contract | Address |
+|---|---|
+| SpaceToken (SPACE) | [`0x80Ce8Ec02eFE1E3436A6865a44f1Fa9E5B04589E`](https://sepolia.etherscan.io/address/0x80Ce8Ec02eFE1E3436A6865a44f1Fa9E5B04589E) |
+| TariffOracle | [`0x122028d60f6606b9d15B2913fFFa27F9afcD2Eac`](https://sepolia.etherscan.io/address/0x122028d60f6606b9d15B2913fFFa27F9afcD2Eac) |
+| Reserve | [`0xa41FdDE870f338B856df637aD581216D8659aD8D`](https://sepolia.etherscan.io/address/0xa41FdDE870f338B856df637aD581216D8659aD8D) |
+| TariffRouter | [`0x05Dbc5Bca975B2da76A5A421824629977d3770E4`](https://sepolia.etherscan.io/address/0x05Dbc5Bca975B2da76A5A421824629977d3770E4) |
+
+Treasury = deployer `0x31e4A02C0835d9e27D68528e89411a1B1A256D19`, reserve share 20%. The oracle was loaded with the 25 USITC HTS rates for route `ANY->US`. Demo [`payTariff`](https://sepolia.etherscan.io/tx/0xedeeaea10a7e73632a97d2bef572c43eee57dd1971609d0c84b6149577ff3a46): optical telescopes (HTS 9005.80.40, 8%), declared value 50,000 SPACE → fee 4,000 SPACE → **800 to Reserve**, 3,200 to treasury.
+
+Note: Sepolia charges far more gas for contract creation than forge's local simulation predicts, so deploy with `--skip-simulation` to let the node estimate gas.
+
+## Deploying to Sepolia yourself
+You need:
 1. A dedicated testnet-only deployer key, exported as an env var (e.g. `PRIVATE_KEY`), never committed.
 2. Sepolia ETH for gas from a faucet.
 3. A Sepolia RPC URL (`SEPOLIA_RPC_URL`, from Alchemy, Infura or a public endpoint).
 4. Optionally an `ETHERSCAN_API_KEY` for `--verify`.
-5. `TREASURY=<addr> forge script script/Deploy.s.sol --rpc-url $SEPOLIA_RPC_URL --private-key $PRIVATE_KEY --broadcast --verify`, then `ORACLE=<addr> RPC_URL=$SEPOLIA_RPC_URL python3 scripts/feed_oracle.py`.
+5. `TREASURY=<addr> forge script script/Deploy.s.sol --rpc-url $SEPOLIA_RPC_URL --private-key $PRIVATE_KEY --broadcast --slow --skip-simulation --verify`, then `ORACLE=<addr> RPC_URL=$SEPOLIA_RPC_URL python3 scripts/feed_oracle.py`.
 6. Ideally, admin roles handed to a Safe multisig after deploy.
 
 `Deploy.s.sol` refuses to run on chain id 1.

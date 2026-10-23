@@ -1,0 +1,33 @@
+{
+  "network": "sepolia",
+  "chainId": 11155111,
+  "deployedAt": "2026-10-22",
+  "deployer": "0x31e4A02C0835d9e27D68528e89411a1B1A256D19",
+  "treasury": "0x31e4A02C0835d9e27D68528e89411a1B1A256D19",
+  "reserveShareBps": 2000,
+  "contracts": {
+    "SpaceToken": "0x80Ce8Ec02eFE1E3436A6865a44f1Fa9E5B04589E",
+    "TariffOracle": "0x122028d60f6606b9d15B2913fFFa27F9afcD2Eac",
+    "Reserve": "0xa41FdDE870f338B856df637aD581216D8659aD8D",
+    "TariffRouter": "0x05Dbc5Bca975B2da76A5A421824629977d3770E4"
+  },
+  "transactions": {
+    "deploySpaceToken": "0xea91f77b36be752f5832b134868d36986342baa08deb5e2d3a38b827f5c2f9f2",
+    "deployTariffOracle": "0x0995627c9b9f4fcc386c829990ce22efe5e27575f8dde5565d15d667eb42d828",
+    "deployReserve": "0xae772d25bf4101216c21540fb9c2745a8b31c838f01fa1544d2aad7bba90bff3",
+    "deployTariffRouter": "0x13e88110256d3a50316aaef8ba3fd6c81ae7380256da478e2835372f7c68c80f",
+    "feedOracle25HtsRates": "0x22577d6c046d07fc0484fa43e6a5da1f4e679d511d27fb7a6fd2b153600ffb54",
+    "demoMint": "0x5ea14994e496cfa98d388dc463215ff30b83a8e1ab54d74affc1f7e5dd12be0f",
+    "demoApprove": "0x53fc8b244d92478f00cdef9a98b6635896e019ab1bfe0f49adacfed5b63a7905",
+    "demoPayTariff": "0xedeeaea10a7e73632a97d2bef572c43eee57dd1971609d0c84b6149577ff3a46"
+  },
+  "demoPayment": {
+    "route": "ANY->US",
+    "hsCode": "9005.80.40",
+    "declaredValue": "50000 SPACE",
+    "fee": "4000 SPACE",
+    "toReserve": "800 SPACE",
+    "toTreasury": "3200 SPACE"
+  },
+  "verified": false
+}
