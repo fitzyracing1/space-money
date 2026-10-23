@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>space-money: deploy to Ethereum mainnet</title>
+<link rel="stylesheet" href="style.css">
+<style>
+.danger{background:#5a0b16;border:1px solid #ff4d6d;color:#ffd6dc;border-radius:12px;padding:.9rem;margin-bottom:1rem;font-size:.95rem}
+.step{display:grid;grid-template-columns:1fr;gap:.4rem;padding:.8rem;border:1px solid var(--line);border-radius:12px;margin:.6rem 0;background:#0b0f2a}
+.step h3{margin:0;font-size:1rem}
+.step .st{font-size:.85rem;color:var(--mut);word-break:break-all}
+.step.done{border-color:#3ddc97}.step.done h3::after{content:" ✓";color:#3ddc97}
+.step.err{border-color:#ff4d6d}
+textarea{width:100%;min-height:14rem;background:#0b0f2a;color:var(--txt);border:1px solid var(--line);border-radius:10px;padding:.6rem;font-family:ui-monospace,monospace;font-size:.75rem}
+.kv{font-size:.85rem;word-break:break-all;line-height:1.7}
+</style>
+</head>
+<body>
+<div class="stars" aria-hidden="true"></div>
+<div class="banner" role="alert">⚠️ Prototype, not an offering, no real value. This page spends REAL ETH on Ethereum mainnet.</div>
+<header>
+  <h1>Deploy to mainnet</h1>
+  <p class="sub">Deploys SPACE, TariffOracle, Reserve and TariffRouter <b>from your own wallet</b>. Your connected address becomes the admin, treasury, minter, oracle updater, config and withdrawer, the same wiring as <code>DeployMainnet.s.sol</code> with ADMIN = you.</p>
+</header>
+<main>
+  <div class="danger">
+    <b>Real money.</b> Every step is a mainnet transaction that costs real ETH and cannot be undone. Only continue if you have had legal review (see <a href="https://github.com/fitzyracing1/space-money/blob/main/MAINNET.md" target="_blank" rel="noopener noreferrer">MAINNET.md</a>). A single key controls everything. If you lose the wallet you lose admin; if it leaks, an attacker can mint and drain the reserve. Roles can be moved to a Safe later.
+  </div>
+  <section class="panel">
+    <button id="connect">Connect wallet (Ethereum mainnet only)</button>
+    <div class="kv" id="who"></div>
+    <label style="margin-top:.8rem"><input type="checkbox" id="ack" style="display:inline;width:auto"> I understand this spends real ETH, that the contracts are unaudited, and that I am the only admin.</label>
+    <div class="kv" id="gas"></div>
+  </section>
+  <section class="panel">
+    <h2>Steps <span class="small">(one tap = one transaction)</span></h2>
+    <div id="steps"></div>
+    <button id="reset" style="background:#333a66;margin-top:.5rem">Forget saved progress on this device</button>
+  </section>
+  <section class="panel" id="result" hidden>
+    <h2>Deployed</h2>
+    <div class="kv" id="addrs"></div>
+    <p class="small">Copy this into <code>deployments/mainnet.json</code>:</p>
+    <textarea id="json" readonly></textarea>
+    <button id="copy">Copy JSON</button>
+  </section>
+</main>
+<footer><p>No data is collected. Progress is saved only in this browser's localStorage so a reload doesn't lose deployed addresses. <a href="./">← back to the Sepolia demo</a></p></footer>
+<script type="module" src="deploy.js"></script>
+</body>
+</html>
