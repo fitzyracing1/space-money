@@ -30,3 +30,6 @@ td:nth-child(2){white-space:nowrap}
 .links{padding-left:1.1rem;line-height:1.9}
 a{color:var(--acc)}
 footer{text-align:center;color:var(--mut);font-size:.8rem;padding:1rem 1rem 2rem;max-width:44rem;margin:0 auto}
+.watch{display:flex;align-items:center;justify-content:center;gap:.5rem;width:100%;font-size:1.05rem;padding:.85rem;background:linear-gradient(90deg,#7c5cff,#ffd54f);color:#0b0f2a;font-weight:700;border:0;border-radius:12px}
+.watch img{border-radius:50%}
+#addtoken{margin:0 0 1rem}
