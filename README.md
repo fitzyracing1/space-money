@@ -79,6 +79,21 @@ Deployed on 2026-10-23 from a Coinbase Smart Wallet via the deterministic CREATE
 
 Source verified on [Sourcify](https://repo.sourcify.dev/1/0x0af05969C412Dc1E07be5fC5A4e141214aAe846e) (status `match` for runtime and creation bytecode on all four; not `exact_match` because the build omits CBOR metadata for reproducibility). Minting from the admin wallet: [`mint.html`](https://fitzyracing1.github.io/space-money/mint.html).
 
+
+## Use the tariff feed
+
+The mainnet TariffOracle is a public tariff data feed that any coin, contract or app can read for free.
+
+- **Live rates:** [feed.html](https://fitzyracing1.github.io/space-money/feed.html), read straight from chain.
+- **Oracle:** [`0x05D05690425C79a9367c3Ac626F67D148e53Bc6a`](https://etherscan.io/address/0x05D05690425C79a9367c3Ac626F67D148e53Bc6a#readContract): `getRate("ANY->US", "<HTS code>") → (bps, updatedAt)`.
+- **Standard:** [docs/TFS-1.md](docs/TFS-1.md), the draft *Tariff Feed Standard* (`ITariffFeed`, ERC-165 id `0x89f00515`). It covers batch reads, source ids, staleness guidance and versioning.
+- **Integration guide:** [docs/integrate.md](docs/integrate.md), with Solidity, ethers.js and cast snippets.
+- **Adapter:** the live oracle predates TFS-1. [`TariffFeedAdapter`](src/TariffFeedAdapter.sol) wraps it read-only so it conforms, without redeploying the oracle. It is not deployed yet. The admin can deploy it from feed.html through the CREATE2 factory; its predicted address is `0x42BbE6c607a95a245ace68f49cF589D67864a548`.
+- **Example consumer:** [`TariffFeeCalculator`](src/examples/TariffFeeCalculator.sol) quotes duty in stablecoin units and rejects stale, future-dated or unknown rates.
+- **Updating rates:** `python3 scripts/update_feed.py` diffs live USITC HTS against chain and prints only the changes, as an unsigned `setRates` tx (`--format calldata` gives raw calldata, `--all` gives a re-attestation batch). It never signs. The updater wallet reviews the output and sends it.
+
+Rates are informational, not legal or customs advice.
+
 ## Mainnet
 Not deployed. See [MAINNET.md](MAINNET.md) for the legal, audit, cost, Safe and updater-key checklist and the guarded `script/DeployMainnet.s.sol`.
 

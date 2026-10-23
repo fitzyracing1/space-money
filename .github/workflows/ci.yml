@@ -19,5 +19,7 @@ jobs:
         run: ./scripts/export_artifacts.sh && git diff --exit-code site/artifacts
       - name: Test
         run: forge test -vv
+      - name: update_feed.py encoder matches cast
+        run: python3 scripts/update_feed.py --self-test
       - name: End-to-end demo (local anvil)
         run: ./scripts/demo.sh

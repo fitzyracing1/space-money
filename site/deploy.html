@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>space-money: deploy to Ethereum mainnet</title>
-<link rel="stylesheet" href="style.css?v=5">
+<link rel="stylesheet" href="style.css?v=6">
 <style>
 .danger{background:#5a0b16;border:1px solid #ff4d6d;color:#ffd6dc;border-radius:12px;padding:.9rem;margin-bottom:1rem;font-size:.95rem}
 .step{display:grid;grid-template-columns:1fr;gap:.4rem;padding:.8rem;border:1px solid var(--line);border-radius:12px;margin:.6rem 0;background:#0b0f2a}
@@ -25,7 +25,7 @@ textarea{width:100%;min-height:14rem;background:#0b0f2a;color:var(--txt);border:
 </header>
 <main>
   <section class="panel" id="addtoken"></section>
-  <p class="small">Already deployed? <a href="mint.html?v=5">Mint SPACE →</a></p>
+  <p class="small">Already deployed? <a href="mint.html?v=6">Mint SPACE →</a></p>
   <div class="danger">
     <b>Real money.</b> Every step is a mainnet transaction that costs real ETH and cannot be undone. Only continue if you have had legal review (see <a href="https://github.com/fitzyracing1/space-money/blob/main/MAINNET.md" target="_blank" rel="noopener noreferrer">MAINNET.md</a>). A single key controls everything. If you lose the wallet you lose admin; if it leaks, an attacker can mint and drain the reserve. Roles can be moved to a Safe later.
   </div>
@@ -48,8 +48,8 @@ textarea{width:100%;min-height:14rem;background:#0b0f2a;color:var(--txt);border:
     <button id="copy">Copy JSON</button>
   </section>
 </main>
-<footer><p>No data is collected. Progress is saved only in this browser's localStorage so a reload doesn't lose deployed addresses. <a href="./">← back to the Sepolia demo</a></p></footer>
-<script type="module" src="deploy.js?v=5"></script>
-<script type="module" src="watch.js?v=5"></script>
+<footer><p>No data is collected. Progress is saved only in this browser's localStorage so a reload doesn't lose deployed addresses. <a href="./">← back to the Sepolia demo</a> · <a href="feed.html?v=6">tariff feed</a></p></footer>
+<script type="module" src="deploy.js?v=6"></script>
+<script type="module" src="watch.js?v=6"></script>
 </body>
 </html>

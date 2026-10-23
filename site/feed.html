@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>space-money: Tariff Feed (TFS-1) live mainnet rates</title>
+<link rel="stylesheet" href="style.css?v=6">
+<style>
+.kv{font-size:.85rem;word-break:break-all;line-height:1.7}
+.lit{color:#3ddc97;font-weight:600}.dark{color:var(--mut);font-weight:600}
+code{word-break:break-all}
+</style>
+</head>
+<body>
+<div class="stars" aria-hidden="true"></div>
+<div class="banner" role="alert">⚠️ Prototype, not an offering. Rates are informational, not legal or customs advice.</div>
+<header>
+  <h1>Tariff Feed</h1>
+  <p class="sub">Live US import tariff rates published on Ethereum mainnet. Any contract or app can read them. Draft standard: <a href="https://github.com/fitzyracing1/space-money/blob/main/docs/TFS-1.md" target="_blank" rel="noopener noreferrer">TFS-1</a>.</p>
+</header>
+<main>
+  <section class="panel" id="addtoken"></section>
+  <section class="panel">
+    <h2>Live rates <span class="small" id="route"></span></h2>
+    <div class="kv" id="meta">Reading from chain…</div>
+    <div class="tablewrap"><table>
+      <thead><tr><th>HS code</th><th>Rate</th><th>Description</th><th>Last updated</th><th>Status</th></tr></thead>
+      <tbody id="rates"><tr><td colspan="5">Loading…</td></tr></tbody>
+    </table></div>
+    <p class="small">Source: USITC Harmonized Tariff Schedule, General (MFN) column, route <code>ANY-&gt;US</code>. <span class="lit">lit</span> = updated within <span id="maxage"></span> days; <span class="dark">dark</span> = older (see staleness guidance). Read through a public RPC; no wallet needed.</p>
+  </section>
+  <section class="panel">
+    <h2>Read it from code</h2>
+    <p class="small">Oracle (live): <a id="oracleLink" target="_blank" rel="noopener noreferrer"></a><br>
+    <code>getRate(string route, string hsCode) → (uint16 bps, uint64 updatedAt)</code>, e.g. <code>getRate("ANY->US","9005.80.40")</code>.<br>
+    Guide: <a href="https://github.com/fitzyracing1/space-money/blob/main/docs/integrate.md" target="_blank" rel="noopener noreferrer">docs/integrate.md</a> (Solidity + ethers.js).</p>
+  </section>
+  <section class="panel">
+    <h2>Optional (admin): deploy the TFS-1 adapter</h2>
+    <p class="small">A read-only <code>TariffFeedAdapter</code> that wraps the live oracle so it speaks TFS-1 (ERC-165, batch reads, source id). It has no owner and cannot change rates. The oracle itself is not touched. Deployed through the CREATE2 factory, so it works from a smart wallet. Costs mainnet gas.</p>
+    <button id="connect">Connect wallet (Ethereum mainnet only)</button>
+    <div class="kv" id="who"></div>
+    <label style="margin-top:.8rem"><input type="checkbox" id="ack" style="display:inline;width:auto"> I understand this is a real mainnet transaction that costs ETH</label>
+    <div class="kv" id="est"></div>
+    <button id="deploy" disabled>Deploy adapter</button>
+    <div class="kv" id="msg"></div>
+  </section>
+</main>
+<footer><p>No data is collected. <a href="./">Sepolia demo</a> · <a href="mint.html?v=6">mint</a> · <a href="deploy.html?v=6">deploy</a></p></footer>
+<script type="module" src="feed.js?v=6"></script>
+<script type="module" src="watch.js?v=6"></script>
+</body>
+</html>
