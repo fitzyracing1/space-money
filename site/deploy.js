@@ -7,11 +7,47 @@ const SHARE_BPS = 2000;
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
+const V = "2";
+const norm = (a) => { if (typeof a !== "string" || !/^0x[0-9a-fA-F]{40}$/.test(a.trim())) throw new Error(`invalid address: ${JSON.stringify(a)}`); return ethers.getAddress(a.trim().toLowerCase()); };
+const errText = (e) => {
+  const parts = [e?.shortMessage || e?.message || String(e)];
+  const code = e?.code ?? e?.error?.code ?? e?.info?.error?.code; if (code !== undefined) parts.push(`code ${code}`);
+  const inner = e?.info?.error?.message || e?.error?.message || e?.data?.message; if (inner && !parts[0].includes(inner)) parts.push(inner);
+  if (e?.message && e.message !== parts[0]) parts.push(e.message);
+  return parts.join(" | ");
+};
+// Minimal JSON-RPC tx: only defined keys, hex quantities, and NO "to" key for contract creation.
+function rpcTx(tx, gasLimit) {
+  const o = { from: norm(me), data: tx.data, gas: ethers.toQuantity(gasLimit) };
+  if (tx.to !== undefined && tx.to !== null && tx.to !== "") o.to = norm(tx.to);
+  if (tx.value) o.value = ethers.toQuantity(tx.value);
+  return o;
+}
+const isInvalidAddr = (e) => /invalid address/i.test(errText(e));
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+// Poll the receipt over raw JSON-RPC and parse it ourselves, so a wallet that reports `to: ""` (or odd casing) can't break us.
+async function waitReceipt(hash) {
+  for (;;) {
+    const r = await window.ethereum.request({ method: "eth_getTransactionReceipt", params: [hash] });
+    if (r && r.blockNumber) return { hash, status: Number(r.status), gasUsed: BigInt(r.gasUsed), contractAddress: r.contractAddress || null };
+    await sleep(3000);
+  }
+}
+async function sendRaw(tx, gasLimit) {
+  const o = rpcTx(tx, gasLimit);
+  try { return await window.ethereum.request({ method: "eth_sendTransaction", params: [o] }); }
+  catch (e) {
+    // Rejected before signing (nothing broadcast): retry once with lowercase addresses, which some wallets prefer.
+    if (!isInvalidAddr(e)) throw e;
+    const lo = { ...o, from: o.from.toLowerCase(), ...(o.to ? { to: o.to.toLowerCase() } : {}) };
+    return await window.ethereum.request({ method: "eth_sendTransaction", params: [lo] });
+  }
+}
 let bp, signer, me, art = {}, st = {}, ethUsd = null, busy = false;
 const KEY = () => `space-money-mainnet-deploy:${me}`;
 const save = () => localStorage.setItem(KEY(), JSON.stringify(st));
 
-const C = (name, rec) => new ethers.Contract(rec.address, art[name].abi, signer);
+const C = (name, rec) => new ethers.Contract(norm(rec.address), art[name].abi, signer);
 const role = (s) => ethers.id(s);
 
 // Each step: build() returns an unsigned tx request; after() records the result.
@@ -29,7 +65,7 @@ const STEPS = [
 ];
 
 async function loadArtifacts() {
-  for (const n of ["SpaceToken", "TariffOracle", "Reserve", "TariffRouter"]) art[n] = await (await fetch(`artifacts/${n}.json`)).json();
+  for (const n of ["SpaceToken", "TariffOracle", "Reserve", "TariffRouter"]) art[n] = await (await fetch(`artifacts/${n}.json?v=${V}`)).json();
 }
 
 async function feedTx() {
@@ -41,9 +77,11 @@ async function feedTx() {
 async function buildTx(s) {
   if (s.deploy) {
     const f = new ethers.ContractFactory(art[s.deploy].abi, art[s.deploy].bytecode, signer);
-    return f.getDeployTransaction(...s.args());
+    const d = await f.getDeployTransaction(...s.args());
+    return { data: d.data };            // creation: data only, never a "to" key
   }
-  return s.call();
+  const c = await s.call();
+  return { to: norm(c.to), data: c.data };
 }
 
 function ready(i) { return STEPS.slice(0, i).every((p) => p.optional || st[p.id]) && !st[STEPS[i].id]; }
@@ -70,10 +108,10 @@ const usd = (wei) => ethUsd ? ` (~$${(Number(ethers.formatEther(wei)) * ethUsd).
 async function estimate(s) {
   try {
     const tx = await buildTx(s);
-    const [gas, fee] = await Promise.all([bp.estimateGas({ ...tx, from: me }), bp.getFeeData()]);
+    const [gas, fee] = await Promise.all([bp.estimateGas({ ...tx, from: norm(me) }), bp.getFeeData()]);
     const price = fee.maxFeePerGas ?? fee.gasPrice;
     $(`est-${s.id}`).textContent = `Expected gas ≈ ${gas.toLocaleString()} · at ${ethers.formatUnits(fee.gasPrice ?? price, "gwei")} gwei ≈ ${fmtEth(gas * (fee.gasPrice ?? price))} ETH${usd(gas * (fee.gasPrice ?? price))} · max ${fmtEth(gas * price)} ETH`;
-  } catch (e) { $(`est-${s.id}`).textContent = "Estimate failed: " + (e.shortMessage || e.message); }
+  } catch (e) { $(`est-${s.id}`).textContent = "Estimate failed: " + errText(e); }
 }
 
 async function guardChain() {
@@ -89,20 +127,26 @@ async function run(i) {
     await guardChain();
     msg.textContent = "Preparing… then confirm in your wallet.";
     const tx = await buildTx(s);
-    const gas = await bp.estimateGas({ ...tx, from: me });
-    const sent = await signer.sendTransaction({ ...tx, gasLimit: gas * 125n / 100n });
-    msg.innerHTML = `Sent: <a href="${SCAN}/tx/${sent.hash}" target="_blank" rel="noopener noreferrer">${sent.hash}</a>. Waiting for confirmation…`;
-    const rc = await sent.wait();
+    const gas = await bp.estimateGas({ ...tx, from: norm(me) });
+    let hash = st[s.id + "_pending"];
+    if (hash) msg.textContent = `Resuming pending tx ${hash}…`;
+    else {
+      hash = await sendRaw(tx, gas * 125n / 100n);
+    if (typeof hash !== "string" || !/^0x[0-9a-fA-F]{64}$/.test(hash)) throw new Error(`Wallet returned an unexpected tx hash: ${JSON.stringify(hash)}`);
+      st[s.id + "_pending"] = hash; save();   // remember before waiting, so a reload/error never double-sends
+    }
+    msg.innerHTML = `Sent: <a href="${SCAN}/tx/${hash}" target="_blank" rel="noopener noreferrer">${hash}</a>. Waiting for confirmation…`;
+    const rc = await waitReceipt(hash);
     if (!rc || rc.status !== 1) throw new Error("Transaction failed on-chain. Check it on Etherscan before retrying.");
     const rec = { tx: rc.hash, gasUsed: rc.gasUsed.toString() };
     if (s.deploy) {
-      rec.address = ethers.getAddress(rc.contractAddress);
+      rec.address = norm(rc.contractAddress);
       if ((await bp.getCode(rec.address)) === "0x") throw new Error("No code at deployed address.");
     }
-    st[s.id] = rec; save();
+    st[s.id] = rec; delete st[s.id + "_pending"]; save();
   } catch (e) {
     $(`s-${s.id}`).classList.add("err");
-    msg.textContent = "Error: " + (e.shortMessage || e.message);
+    msg.textContent = "Error: " + errText(e); console.error(e);
     busy = false; document.querySelectorAll("#steps button").forEach((b) => (b.disabled = false));
     return;
   }
@@ -134,23 +178,25 @@ async function result() {
     ratesFed: Boolean(st.feed), verified: false,
   };
   $("json").value = JSON.stringify(out, null, 2);
-  try { $("roles").textContent = await verifyRoles(); } catch (e) { $("roles").textContent = "Role check failed: " + (e.shortMessage || e.message); }
+  try { $("roles").textContent = await verifyRoles(); } catch (e) { $("roles").textContent = "Role check failed: " + errText(e); }
 }
 
 async function connect() {
   if (!window.ethereum) { $("who").textContent = "No wallet found. Open this page in the Coinbase / Base wallet's in-app browser."; return; }
   bp = new ethers.BrowserProvider(window.ethereum, "any");
-  await bp.send("eth_requestAccounts", []);
+  const accts = await window.ethereum.request({ method: "eth_requestAccounts" });
+  if (!Array.isArray(accts) || !accts.length) throw new Error("Wallet returned no accounts. Unlock the wallet and tap Connect again.");
   let net = await bp.getNetwork();
   if (net.chainId !== CHAIN_ID) {
     try { await window.ethereum.request({ method: "wallet_switchEthereumChain", params: [{ chainId: "0x1" }] }); } catch {}
     bp = new ethers.BrowserProvider(window.ethereum, "any"); net = await bp.getNetwork();
   }
   if (net.chainId !== CHAIN_ID) { $("who").textContent = `Wrong network (chain ${net.chainId}). This page only works on Ethereum mainnet (chain 1).`; return; }
-  signer = await bp.getSigner(); me = ethers.getAddress(await signer.getAddress());
+  me = norm(accts[0]);
+  signer = await bp.getSigner(me); me = norm(await signer.getAddress());
   st = JSON.parse(localStorage.getItem(KEY()) || "{}");
   const bal = await bp.getBalance(me);
-  $("who").innerHTML = `Connected <b>${me}</b> on chain 1 · balance ${fmtEth(bal)} ETH${usd(bal)}`;
+  $("who").innerHTML = `Using wallet: <b id="using">${me}</b><br>Connected on chain 1 · balance ${fmtEth(bal)} ETH${usd(bal)}`;
   const fee = await bp.getFeeData();
   const est = 40_000_000n * (fee.gasPrice ?? 0n);
   $("gas").textContent = `Current gas price ${ethers.formatUnits(fee.gasPrice ?? 0n, "gwei")} gwei. Whole flow ≈ 40M gas ≈ ${fmtEth(est)} ETH${usd(est)} (upper bound).`;
@@ -161,7 +207,7 @@ async function connect() {
 
 fetch("https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd", { referrerPolicy: "no-referrer" })
   .then((r) => r.json()).then((j) => { ethUsd = j?.ethereum?.usd ?? null; }).catch(() => {});
-$("connect").addEventListener("click", () => connect().catch((e) => ($("who").textContent = "Error: " + (e.shortMessage || e.message))));
+$("connect").addEventListener("click", () => connect().catch((e) => ($("who").textContent = "Error: " + errText(e))));
 $("ack").addEventListener("change", () => signer && render());
 $("reset").addEventListener("click", () => { if (me && confirm("Forget saved addresses on this device? (On-chain contracts are unaffected.)")) { localStorage.removeItem(KEY()); st = {}; render(); } });
 $("copy").addEventListener("click", async () => { try { await navigator.clipboard.writeText($("json").value); $("copy").textContent = "Copied ✓"; } catch { $("json").select(); document.execCommand("copy"); } });

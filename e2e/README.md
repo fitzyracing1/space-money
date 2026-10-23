@@ -10,3 +10,10 @@ npm i puppeteer-core@23
 SHIM_RPC=http://127.0.0.1:8546 SHIM_ACCT=0x70997970C51812dc3A010C7d01b50e0d17dc79C8 PAGE=http://127.0.0.1:8088/deploy.html node e2e/deploy-page.mjs
 # wrong-chain check: point SHIM_RPC at an anvil with --chain-id 11155111 and set EXPECT_REJECT=1
 ```
+
+## Coinbase Wallet mode
+
+`COINBASE=1` makes the shim mimic Coinbase / Base wallet quirks: `eth_accounts` returns a lowercase address,
+`eth_sendTransaction` rejects any tx whose `to` key is present but null/empty (`invalid address`, code -32602),
+and contract-creation txs/receipts come back with `to: ""`. The pre-fix page failed step 1 with
+`invalid value for value.to (invalid address …)` under this shim; the fixed page completes all 9 steps.
