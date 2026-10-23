@@ -18,7 +18,7 @@
 ```bash
 curl -L https://foundry.paradigm.xyz | bash && foundryup
 git clone --recursive https://github.com/fitzyracing1/space-money && cd space-money
-forge test          # 41 tests: fees, reserve split, access control, edge cases, fuzz, mainnet-deploy guards
+forge test          # 42 tests: fees, reserve split, access control, edge cases, fuzz, mainnet-deploy guards
 ./scripts/demo.sh   # anvil → deploy → feed real HTS rates → pay a tariff → show the split
 ```
 

@@ -5,7 +5,8 @@ const p = await b.newPage();
 await p.setViewport({ width: 390, height: 844, isMobile: true, hasTouch: true });
 p.on("pageerror", (e) => console.log("PAGEERROR", e.message));
 const CB = Boolean(process.env.COINBASE);   // mimic Coinbase Wallet quirks
-await p.evaluateOnNewDocument((rpc, acct, cb) => {
+const SW = Boolean(process.env.SMART);      // mimic a Coinbase Smart Wallet (ERC-4337 account)
+await p.evaluateOnNewDocument((rpc, acct, cb, sw) => {
   let id = 0; const calls = [];
   window.__calls = calls;
   window.ethereum = {
@@ -13,6 +14,21 @@ await p.evaluateOnNewDocument((rpc, acct, cb) => {
     async request({ method, params }) {
       calls.push(method);
       if (method === "eth_requestAccounts" || method === "eth_accounts") return [cb ? acct.toLowerCase() : acct];
+      // Smart wallet: account has proxy code; creation txs (no/empty `to`) are impossible;
+      // the returned reference is a UserOp hash, not an L1 tx hash (no receipt for it).
+      if (sw && method === "eth_getCode" && params[0].toLowerCase() === acct.toLowerCase())
+        return "0x363d3d373d3d363d7f360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc545af43d6000803e6038573d6000fd5b3d6000f3";
+      if (sw && method === "eth_sendTransaction") {
+        const tx = params[0]; window.__sent = (window.__sent || []).concat([tx]);
+        if (!tx.to) { const e = new Error("invalid address: null"); e.code = -32602; throw e; }
+        if (!window.__ops) window.__ops = 0;
+        window.__ops++;
+        const r = await fetch(rpc, { method: "POST", headers: { "content-type": "application/json" },
+          body: JSON.stringify({ jsonrpc: "2.0", id: ++id, method, params: [{ from: tx.from, to: tx.to, data: tx.data, value: tx.value }] }) });
+        const j = await r.json(); if (j.error) { const e = new Error(j.error.message); e.code = j.error.code; throw e; }
+        // fake UserOp hash (keccak-looking, never an L1 tx hash)
+        return "0x" + Array.from(crypto.getRandomValues(new Uint8Array(32)), (b) => b.toString(16).padStart(2, "0")).join("");
+      }
       if (cb && method === "eth_sendTransaction") {
         const tx = params[0]; window.__sent = (window.__sent || []).concat([tx]);
         if ("to" in tx && (tx.to === null || tx.to === "" || tx.to === undefined)) { const e = new Error("invalid address"); e.code = -32602; throw e; }
@@ -28,7 +44,7 @@ await p.evaluateOnNewDocument((rpc, acct, cb) => {
     },
     on() {}, removeListener() {},
   };
-}, RPC, ACCT, CB);
+}, RPC, ACCT, CB, SW);
 await p.goto(URL, { waitUntil: "networkidle0" });
 await p.click("#connect");
 await p.waitForFunction(() => document.getElementById("who").textContent.length > 0, { timeout: 30000 });
@@ -51,7 +67,7 @@ for (let n = 0; n < 9; n++) {
   if (!t[0]) { failed = true; break; }
 }
 if (failed) { await b.close(); process.exit(1); }
-if (CB) console.log("SENT KEYS:", JSON.stringify(await p.evaluate(() => window.__sent.map((t) => Object.keys(t).join(",")))));
+if (CB || SW) console.log("SENT KEYS:", JSON.stringify(await p.evaluate(() => window.__sent.map((t) => Object.keys(t).join(",")))));
 await p.waitForFunction(() => !document.getElementById("result").hidden && /✓|✗/.test(document.getElementById("roles")?.textContent || ""), { timeout: 30000 });
 console.log("ROLES:", await p.$eval("#roles", (e) => e.textContent));
 console.log("JSON:", await p.$eval("#json", (e) => e.value));

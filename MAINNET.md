@@ -95,3 +95,14 @@ done
 ORACLE=$ORACLE RPC_URL=$ETH_RPC_URL PRIVATE_KEY=... python3 scripts/feed_oracle.py   # prefer a signer that doesn't need a raw key
 ```
 `DeployMainnet.s.sol` reverts unless the chain id is 1, `CONFIRM_MAINNET=yes` and `ADMIN` is set (EOA or Safe). After granting the roles to `ADMIN` (and `UPDATER_ROLE` to the updater), a separate deployer renounces `DEFAULT_ADMIN_ROLE` on all 4 contracts. This is covered by `test/DeployMainnet.t.sol`.
+
+## Phone deploy uses CREATE2 (smart-wallet safe)
+
+`site/deploy.html` never sends a contract-creation transaction. Every contract is created through the
+canonical deterministic deployer `0x4e59b44847b379578588920cA78FbF26c0B4956C` with
+`data = salt ++ initcode`, where `salt = keccak256(abi.encode(admin, "space-money/v1", contractName))`.
+This works for EOAs and for Coinbase Smart Wallet / EIP-7702 accounts, which cannot send creation txs.
+Addresses are predicted with `getCreate2Address` and shown before sending; confirmation is by polling
+`eth_getCode` / role state (a smart wallet returns a UserOp hash, not a tx hash). Re-running is idempotent:
+anything already on-chain is skipped. All constructors take `admin` explicitly, so the factory never holds a
+role (checked by `test/Create2Deploy.t.sol` and by the page's final role check).

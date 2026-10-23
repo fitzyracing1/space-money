@@ -17,3 +17,11 @@ SHIM_RPC=http://127.0.0.1:8546 SHIM_ACCT=0x70997970C51812dc3A010C7d01b50e0d17dc7
 `eth_sendTransaction` rejects any tx whose `to` key is present but null/empty (`invalid address`, code -32602),
 and contract-creation txs/receipts come back with `to: ""`. The pre-fix page failed step 1 with
 `invalid value for value.to (invalid address …)` under this shim; the fixed page completes all 9 steps.
+
+## Smart wallet mode
+
+`SMART=1` mimics a Coinbase Smart Wallet (ERC-4337): `eth_getCode(account)` returns ERC-1967 proxy code,
+`eth_sendTransaction` without a `to` is rejected (`invalid address: null`), and the returned reference is a
+random UserOp-style hash with no L1 receipt. The page must deploy everything via the CREATE2 deployer
+`0x4e59b44847b379578588920cA78FbF26c0B4956C` and confirm by polling `eth_getCode` / on-chain state.
+Re-opening the page for the same wallet with empty localStorage detects all 9 steps as already done and sends nothing.
