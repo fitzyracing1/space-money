@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>space-money: mint SPACE on mainnet</title>
+<link rel="stylesheet" href="style.css?v=4">
+<style>
+.danger{background:#5a0b16;border:1px solid #ff4d6d;color:#ffd6dc;border-radius:12px;padding:.9rem;margin-bottom:1rem;font-size:.95rem}
+.step{display:grid;grid-template-columns:1fr;gap:.4rem;padding:.8rem;border:1px solid var(--line);border-radius:12px;margin:.6rem 0;background:#0b0f2a}
+.step h3{margin:0;font-size:1rem}
+.step .st{font-size:.85rem;color:var(--mut);word-break:break-all}
+.step.done{border-color:#3ddc97}.step.done h3::after{content:" ✓";color:#3ddc97}
+.step.err{border-color:#ff4d6d}
+textarea{width:100%;min-height:14rem;background:#0b0f2a;color:var(--txt);border:1px solid var(--line);border-radius:10px;padding:.6rem;font-family:ui-monospace,monospace;font-size:.75rem}
+.kv{font-size:.85rem;word-break:break-all;line-height:1.7}
+</style>
+</head>
+<body>
+<div class="stars" aria-hidden="true"></div>
+<div class="banner" role="alert">⚠️ Prototype, not an offering, no real value. Minting is a REAL mainnet transaction that costs ETH.</div>
+<header>
+  <h1>Mint SPACE</h1>
+  <p class="sub">Mints SPACE on Ethereum mainnet from a wallet that holds <code>MINTER_ROLE</code>. Addresses come from <code>deployments/mainnet.json</code>.</p>
+</header>
+<main>
+  <div class="danger"><b>Real money.</b> Minting creates tokens on mainnet and costs ETH. Do not sell, distribute or list SPACE before legal review (see <a href="https://github.com/fitzyracing1/space-money/blob/main/MAINNET.md" target="_blank" rel="noopener noreferrer">MAINNET.md</a>).</div>
+  <section class="panel">
+    <button id="connect">Connect wallet (Ethereum mainnet only)</button>
+    <div class="kv" id="who"></div>
+    <div class="kv" id="supply"></div>
+  </section>
+  <section class="panel">
+    <label>Amount (SPACE)<input id="amount" inputmode="decimal" value="1000000"></label>
+    <label>Recipient<input id="to" autocomplete="off" spellcheck="false"></label>
+    <div class="danger" id="towarn" hidden>⚠️ Recipient is NOT your connected wallet. Minting to someone else may count as distribution — stop unless legal review approved it.</div>
+    <label style="margin-top:.8rem"><input type="checkbox" id="ack" style="display:inline;width:auto"> Minting to myself; I won't sell or distribute SPACE before legal review</label>
+    <div class="kv" id="est"></div>
+    <button id="mint" disabled>Estimate &amp; mint</button>
+    <div class="kv" id="msg"></div>
+  </section>
+</main>
+<footer><p>No data is collected. <a href="deploy.html?v=4">← deploy page</a> · <a href="./">Sepolia demo</a></p></footer>
+<script type="module" src="mint.js?v=1"></script>
+</body>
+</html>

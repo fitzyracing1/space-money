@@ -64,6 +64,21 @@ You need:
 ## Live demo site
 https://fitzyracing1.github.io/space-money/ is a static page in `site/` (ethers v6 from a CDN, no build step), published by `.github/workflows/pages.yml`. It reads the Sepolia contracts live. It has a quote calculator and Sepolia-only approve/payTariff, and it collects no data. [`deploy.html`](https://fitzyracing1.github.io/space-money/deploy.html) is a phone-friendly, chain-1-only page for deploying from a wallet (see MAINNET.md). It is tested via `e2e/`.
 
+## Mainnet deployment
+
+> **Prototype only.** Unaudited, not an offering, no real value. The tariff data is not the backing. Do not sell, distribute or list SPACE before legal review (see the Legal note below).
+
+Deployed on 2026-10-23 from a Coinbase Smart Wallet via the deterministic CREATE2 deployer (`0x4e59b448…956C`, salt version `space-money/v1`). Admin, treasury, minter and oracle updater: [`0x20fFd7C1…2474`](https://etherscan.io/address/0x20fFd7C153B68002EF052614a5600E240E7E2474). Reserve share 20%; 25 HTS rates fed. Full record: [`deployments/mainnet.json`](deployments/mainnet.json).
+
+| Contract | Address |
+|---|---|
+| SpaceToken (SPACE) | [0x0af05969C412Dc1E07be5fC5A4e141214aAe846e](https://etherscan.io/address/0x0af05969C412Dc1E07be5fC5A4e141214aAe846e) |
+| TariffOracle | [0x05D05690425C79a9367c3Ac626F67D148e53Bc6a](https://etherscan.io/address/0x05D05690425C79a9367c3Ac626F67D148e53Bc6a) |
+| Reserve | [0x9D8E61007980d6Cb0ec0E8E4D3adA1F12D791A8D](https://etherscan.io/address/0x9D8E61007980d6Cb0ec0E8E4D3adA1F12D791A8D) |
+| TariffRouter | [0x0A156a7652f809D6F07a0fCB2D85a8F88b038ABd](https://etherscan.io/address/0x0A156a7652f809D6F07a0fCB2D85a8F88b038ABd) |
+
+Source verified on [Sourcify](https://repo.sourcify.dev/1/0x0af05969C412Dc1E07be5fC5A4e141214aAe846e) (status `match` for runtime and creation bytecode on all four; not `exact_match` because the build omits CBOR metadata for reproducibility). Minting from the admin wallet: [`mint.html`](https://fitzyracing1.github.io/space-money/mint.html).
+
 ## Mainnet
 Not deployed. See [MAINNET.md](MAINNET.md) for the legal, audit, cost, Safe and updater-key checklist and the guarded `script/DeployMainnet.s.sol`.
 

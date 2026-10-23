@@ -25,3 +25,9 @@ and contract-creation txs/receipts come back with `to: ""`. The pre-fix page fai
 random UserOp-style hash with no L1 receipt. The page must deploy everything via the CREATE2 deployer
 `0x4e59b44847b379578588920cA78FbF26c0B4956C` and confirm by polling `eth_getCode` / on-chain state.
 Re-opening the page for the same wallet with empty localStorage detects all 9 steps as already done and sends nothing.
+
+## Mint page
+
+`node e2e/mint-page.mjs` with `SHIM_RPC` pointing at a fresh mainnet fork, `SHIM_ACCT` = the admin smart wallet
+(impersonated on the fork via `anvil_impersonateAccount`) and `PAGE=…/mint.html`. It checks defaults, the
+tick-box gate, the other-recipient warning, the estimate, and a 1,000,000 SPACE mint confirmed by `balanceOf`.
