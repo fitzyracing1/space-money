@@ -22,10 +22,6 @@ function parseCsv(t) {   // small RFC4180 parser for data/hts_sample.csv
   if (f || row.length) { row.push(f); rows.push(row); } return rows;
 }
 
-async function provider() {
-  for (const u of RPCS) { try { const p = new ethers.JsonRpcProvider(u, 1, { staticNetwork: true }); await p.getBlockNumber(); return p; } catch {} }
-  throw new Error("No public RPC reachable.");
-}
 
 async function loadRates() {
   $("maxage").textContent = MAX_AGE_DAYS; $("route").textContent = `route ${ROUTE}`;
@@ -34,7 +30,15 @@ async function loadRates() {
   $("oracleLink").href = `${SCAN}/address/${O}#readContract`; $("oracleLink").textContent = O;
   const desc = {};
   try { for (const r of parseCsv(await (await fetch(`data/hts_sample.csv?v=${V}`)).text()).slice(1)) desc[r[0]] = r[3]; } catch {}
-  const p = await provider();
+  let last;
+  for (const u of RPCS) {   // public RPCs are flaky: retry the whole read on the next one
+    try { return await readFrom(new ethers.JsonRpcProvider(u, 1, { staticNetwork: true }), O, desc); }
+    catch (e) { last = e; console.warn("RPC failed", u, e); }
+  }
+  throw last;
+}
+
+async function readFrom(p, O, desc) {
   const o = new ethers.Contract(O, ORACLE_ABI, p);
   const head = await p.getBlockNumber();
   const seen = new Map();
@@ -46,7 +50,8 @@ async function loadRates() {
   if (!codes.length) codes = Object.keys(desc);   // fallback if logs are unavailable
   const now = Math.floor(Date.now() / 1000), rows = [];
   for (const c of codes) {
-    try { const [bps, at] = await o.getRate(ROUTE, c); rows.push({ c, bps: Number(bps), at: Number(at) }); } catch {}   // removed / unset
+    try { const [bps, at] = await o.getRate(ROUTE, c); rows.push({ c, bps: Number(bps), at: Number(at) }); }
+    catch (e) { if (e?.code !== "CALL_EXCEPTION") throw e; }   // revert = removed / unset; anything else = RPC trouble
   }
   rows.sort((x, y) => y.bps - x.bps || x.c.localeCompare(y.c));
   $("rates").innerHTML = rows.map((r) => { const ageD = (now - r.at) / 86400, lit = ageD <= MAX_AGE_DAYS;
