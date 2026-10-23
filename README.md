@@ -18,7 +18,7 @@
 ```bash
 curl -L https://foundry.paradigm.xyz | bash && foundryup
 git clone --recursive https://github.com/fitzyracing1/space-money && cd space-money
-forge test          # 36 tests: fees, reserve split, access control, edge cases, fuzz
+forge test          # 39 tests: fees, reserve split, access control, edge cases, fuzz, mainnet-deploy guards
 ./scripts/demo.sh   # anvil → deploy → feed real HTS rates → pay a tariff → show the split
 ```
 
@@ -60,6 +60,12 @@ You need:
 6. Ideally, admin roles handed to a Safe multisig after deploy.
 
 `Deploy.s.sol` refuses to run on chain id 1.
+
+## Live demo site
+https://fitzyracing1.github.io/space-money/ is a static page in `site/` (ethers v6 from a CDN, no build step), published by `.github/workflows/pages.yml`. It reads the Sepolia contracts live. It has a quote calculator and Sepolia-only approve/payTariff, and it collects no data.
+
+## Mainnet
+Not deployed. See [MAINNET.md](MAINNET.md) for the legal, audit, cost, Safe and updater-key checklist and the guarded `script/DeployMainnet.s.sol`.
 
 ## Legal note
 This repository is a **technical prototype, not an offering**. Nothing here is an offer or solicitation to sell any token, security or financial product, and SPACE has no value. No token sale is planned or authorized. **Consult a qualified lawyer before any sale, distribution or public deployment** of a token like this. Securities, money-transmission, sanctions and customs law may all apply.

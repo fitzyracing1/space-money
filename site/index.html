@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>space-money — SPACE tariff prototype (Sepolia testnet)</title>
+<meta name="description" content="Testnet prototype of SPACE, an ERC-20 for paying tariffs. Not an offering, no real value.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="stars" aria-hidden="true"></div>
+<div class="banner" role="alert">⚠️ Testnet prototype, not an offering, no real value</div>
+<header>
+  <h1>🚀 space-money</h1>
+  <p class="sub">SPACE is a prototype ERC-20 for paying cross-border and space-cargo tariffs on <b>Sepolia testnet</b>.</p>
+  <p class="sub small">The tariff data is not the backing. The fees and the reserve are.</p>
+</header>
+<main>
+  <section class="cards">
+    <div class="card"><div class="label">SPACE total supply</div><div class="big" id="supply">…</div></div>
+    <div class="card"><div class="label">Reserve balance</div><div class="big" id="reserve">…</div></div>
+    <div class="card"><div class="label">Reserve share</div><div class="big" id="share">…</div></div>
+  </section>
+
+  <section class="panel">
+    <h2>Tariff quote calculator</h2>
+    <label>HS code <select id="hs"></select></label>
+    <label>Declared value (SPACE) <input id="value" type="number" inputmode="decimal" min="0" step="any" value="50000"></label>
+    <div class="quote" id="quote">…</div>
+    <div class="wallet">
+      <button id="connect">Connect wallet (Sepolia only)</button>
+      <div id="acct" class="small"></div>
+      <div class="row">
+        <button id="approve" disabled>1. Approve fee</button>
+        <button id="pay" disabled>2. payTariff</button>
+      </div>
+      <div id="status" class="small" aria-live="polite"></div>
+      <p class="note">Test SPACE has no value. You need test SPACE (minted only by the prototype admin) and Sepolia ETH for gas. Nothing here works on mainnet.</p>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>Oracle tariff rates <span class="small" id="route"></span></h2>
+    <p class="small">Read live from the TariffOracle. Source: USITC Harmonized Tariff Schedule, General (MFN) column.</p>
+    <div class="tablewrap"><table>
+      <thead><tr><th>HTS code</th><th>Rate</th><th>Description</th></tr></thead>
+      <tbody id="rates"><tr><td colspan="3">Loading from Sepolia…</td></tr></tbody>
+    </table></div>
+  </section>
+
+  <section class="panel">
+    <h2>Links</h2>
+    <ul id="links" class="links"></ul>
+  </section>
+</main>
+<footer>
+  <p>Technical prototype, not an offering or solicitation. No token sale. Consult a lawyer before any sale. This site collects no data: no cookies, no analytics, no forms. It only reads public Sepolia data, and it sends a transaction only when you sign one in your wallet.</p>
+  <p>MIT © 2026 Joshua Almeida</p>
+</footer>
+<script type="module" src="app.js"></script>
+</body>
+</html>
