@@ -21,7 +21,7 @@ jobs:
       - name: Assemble site
         run: |
           mkdir -p _site/deployments _site/data
-          cp site/* _site/
+          cp -r site/* _site/
           cp deployments/sepolia.json _site/deployments/
           cp data/hts_sample.csv _site/data/
           touch _site/.nojekyll

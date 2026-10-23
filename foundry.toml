@@ -4,6 +4,7 @@ out = "out"
 libs = ["lib"]
 solc = "0.8.24"
 evm_version = "cancun"
-bytecode_hash = "ipfs"
+bytecode_hash = "none"
+cbor_metadata = false
 remappings = ["@openzeppelin/=lib/openzeppelin-contracts/", "forge-std/=lib/forge-std/src/"]
 fs_permissions = [{ access = "read", path = "./data" }]
