@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>space-money: Zero-duty supplier match</title>
+<link rel="stylesheet" href="style.css?v=6">
+<style>
+.comp{border:2px solid #f5b942;border-radius:10px;padding:12px 14px;background:rgba(245,185,66,.08)}
+.comp li{margin:.35em 0}
+input,select,button{font-size:16px;padding:10px;border-radius:8px;max-width:100%}
+#q{width:100%;box-sizing:border-box}
+.prog{display:inline-block;margin:2px 4px 2px 0;padding:2px 8px;border-radius:12px;background:rgba(61,220,151,.15);font-size:.8rem}
+.row{border-top:1px solid rgba(255,255,255,.12);padding:10px 0}
+.row code{word-break:break-all}
+.lit{color:#3ddc97;font-weight:600}.dark{color:var(--mut);font-weight:600}
+nav a{margin-right:12px}
+</style>
+</head>
+<body>
+<div class="stars" aria-hidden="true"></div>
+<div class="banner" role="alert">⚠️ Informational only. Not legal or customs advice. Confirm with a licensed customs broker.</div>
+<header>
+  <h1>Zero-duty supplier match</h1>
+  <p class="sub">Pick a product by HTS code or words. See which countries' goods can enter the US at zero or reduced duty under real, legal US trade programs.</p>
+  <nav class="small"><a href="index.html">Home</a><a href="feed.html?v=6">Tariff Feed</a><a href="#signup">Get matched</a></nav>
+</header>
+<main>
+  <section class="panel comp" aria-labelledby="ch">
+    <h2 id="ch">Read this first: compliance</h2>
+    <ul>
+      <li><b>Duty depends on two things:</b> the product's HTS classification and its <b>true country of origin</b> (where it was wholly obtained or substantially transformed, under the program's rules of origin).</li>
+      <li>A supplier's <b>nonprofit status, tax breaks, or debts do not change US duty</b>. Neither does how you pay (crypto, SPACE, or dollars). CBP does not accept crypto for duties.</li>
+      <li><b>Transshipment</b> (routing goods through a program country to dodge duty) and <b>misdeclaring origin is customs fraud</b> (19 U.S.C. 1592; criminal penalties possible).</li>
+      <li>To claim a preference you need the program's <b>certification / certificate of origin</b> and records to back it up. Keep them for at least 5 years.</li>
+      <li>Additional Chapter 99 duties (e.g. Section 232 / 301 and other actions) may still apply on top of, or despite, a preference. Check the <a href="https://hts.usitc.gov/" target="_blank" rel="noopener noreferrer">HTS</a>.</li>
+      <li><b>Not legal advice.</b> Rates shown are copied from the USITC HTS "Special" column only; anything else says <i>check HTS</i>.</li>
+    </ul>
+  </section>
+
+  <section class="panel">
+    <h2>Find your product</h2>
+    <label class="small" for="chap">HTS chapter</label><br>
+    <select id="chap"></select>
+    <p><label class="small" for="q">Filter by heading/code (e.g. 6109, 8471.30) or words (e.g. cotton t-shirts)</label><br>
+    <input id="q" type="search" placeholder="code or words" autocomplete="off"></p>
+    <p class="small" id="meta">Choose a chapter to load.</p>
+    <div id="out"></div>
+  </section>
+
+  <section class="panel">
+    <h2>The programs</h2>
+    <ul class="small">
+      <li><b>USMCA</b> (Canada, Mexico; HTS codes S, S+). Goods must meet USMCA rules of origin.</li>
+      <li><b>Other US FTAs:</b> Australia (AU), Bahrain (BH), Chile (CL), Colombia (CO), CAFTA-DR: Costa Rica, Dominican Rep., El Salvador, Guatemala, Honduras, Nicaragua (P, P+), Israel (IL), Jordan (JO), Korea (KR), Morocco (MA), Oman (OM), Panama (PA), Peru (PE), Singapore (SG).</li>
+      <li><b>GSP</b> (A, A*, A+): <span class="dark">dark</span>. Authorization lapsed Dec 31, 2020 and Congress has not renewed it. Duties are paid at the normal rate; the HTS still lists GSP codes.</li>
+      <li><b>AGOA</b> (D): <span class="lit">lit</span>. Reauthorized (P.L. 119-75, Feb 2026; extended by P.L. 119-103) through Dec 31, 2028 for eligible sub-Saharan African countries. Eligibility is set yearly; check the current list.</li>
+      <li><b>Caribbean Basin (CBERA/CBTPA)</b> (E, R): check HTS General Note 7/17 and current eligibility.</li>
+      <li><b>Foreign-trade zones:</b> not a country preference. Goods in an FTZ can defer duty, and you may choose the duty rate of the finished product versus its components (rules apply). See <a href="https://www.trade.gov/foreign-trade-zones-board" target="_blank" rel="noopener noreferrer">FTZ Board</a>.</li>
+      <li><b>Duty drawback:</b> refund of up to 99% of duties paid on imports that are later exported or destroyed (19 U.S.C. 1313). See <a href="https://www.cbp.gov/trade/programs-administration/entry-summary/drawback" target="_blank" rel="noopener noreferrer">CBP drawback</a>.</li>
+    </ul>
+  </section>
+
+  <section class="panel" id="signup">
+    <h2>Pay in crypto? Get matched</h2>
+    <p class="small">Opt in and I'll reply personally with zero/low-duty sourcing options for your product. This page has no backend; the form opens your own email app or a GitHub issue. Nothing is stored here. Paying a supplier in crypto does not change US duty, and US duties are paid to CBP in US dollars.</p>
+    <form id="sf">
+      <p><label class="small" for="sp">Product or HTS code</label><br><input id="sp" required style="width:100%;box-sizing:border-box"></p>
+      <p><label class="small" for="sc">Current supplier country (optional)</label><br><input id="sc" style="width:100%;box-sizing:border-box"></p>
+      <p class="small"><label><input type="checkbox" id="ok" required> I agree to be contacted about this request. I can opt out anytime.</label></p>
+      <button type="submit">Email me a match</button>
+      <a class="small" href="https://github.com/fitzyracing1/space-money/issues/new?title=Supplier+match+request&labels=match&body=Product+or+HTS+code%3A%0ACountry+of+origin+(optional)%3A%0A%0A(This+issue+is+public.+Don%27t+post+private+info.)" target="_blank" rel="noopener noreferrer">or open a public GitHub issue</a>
+    </form>
+    <p class="small">Contact: <a href="mailto:Fitzyracing1@gmail.com">Fitzyracing1@gmail.com</a></p>
+  </section>
+</main>
+<script src="match.js?v=1"></script>
+</body>
+</html>
