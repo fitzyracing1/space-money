@@ -102,3 +102,10 @@ This repository is a **technical prototype, not an offering**. Nothing here is a
 
 ## License
 MIT © 2026 Joshua Almeida
+
+## Full US tariff schedule (HTS)
+
+- `data/hts/`: the full **2026 HTS Revision 21** (USITC). It holds 23,696 lines with parsed General rates (ad valorem, specific, compound, free) and Special programs. A separate Chapter 99 layer covers Section 301 (China) and Section 232 (steel, aluminum, copper). See [docs/hts-coverage.md](docs/hts-coverage.md) for what is and is not covered (no AD/CVD).
+- [docs/TFS-1a.md](docs/TFS-1a.md): a backward-compatible extension for specific and compound rates. The reference `src/TariffFeedV2.sol` is not deployed.
+- [docs/gas-plan.md](docs/gas-plan.md): a cost comparison. It recommends one Merkle root per revision on mainnet (`scripts/hts_merkle.py`).
+- Search the full schedule in the browser on the [feed page](https://fitzyracing1.github.io/space-money/feed.html).

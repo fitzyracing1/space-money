@@ -21,5 +21,7 @@ jobs:
         run: forge test -vv
       - name: update_feed.py encoder matches cast
         run: python3 scripts/update_feed.py --self-test
+      - name: HTS Merkle root reproducible from data/hts
+        run: python3 scripts/hts_merkle.py && git diff --exit-code data/hts/merkle
       - name: End-to-end demo (local anvil)
         run: ./scripts/demo.sh

@@ -1,0 +1,46 @@
+{
+  "source": "U.S. International Trade Commission, Harmonized Tariff Schedule of the United States",
+  "revision": "2026 HTS Revision 21",
+  "revisionName": "2026HTSRev21",
+  "revisionDate": "10/07/2026",
+  "effective": "10/09/2026",
+  "urls": {
+    "export": "https://hts.usitc.gov/reststop/exportList?from=0100&to=9999&format=JSON&styles=false",
+    "releases": "https://hts.usitc.gov/reststop/releaseList",
+    "chapter99": "https://hts.usitc.gov/reststop/file?release=currentRelease&filename=Chapter%2099"
+  },
+  "builtAt": "2026-10-23T06:32:45Z",
+  "stats": {
+    "lines": 23696,
+    "lines10": 19949,
+    "lines8": 3747,
+    "byType": {
+      "ad_valorem": 12078,
+      "free": 8657,
+      "specific": 1567,
+      "other": 622,
+      "compound": 481,
+      "none": 291
+    },
+    "additional": 24169,
+    "additionalByProgram": {
+      "301-China-List3": 11192,
+      "301-China-List4A": 6332,
+      "301-China-List1": 2077,
+      "301-China-4yr-review": 1225,
+      "232-steel": 894,
+      "232-steel-UK": 894,
+      "301-China-List2": 487,
+      "232-steel-derivative": 298,
+      "232-steel-derivative-UK": 298,
+      "232-copper": 133,
+      "232-aluminum": 83,
+      "232-aluminum-UK": 83,
+      "232-aluminum-Russia": 83,
+      "232-aluminum-derivative": 30,
+      "232-aluminum-derivative-UK": 30,
+      "232-aluminum-derivative-Russia": 30
+    },
+    "additionalDistinctHts": 21220
+  }
+}

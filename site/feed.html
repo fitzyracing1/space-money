@@ -30,6 +30,15 @@ code{word-break:break-all}
     <p class="small">Source: USITC Harmonized Tariff Schedule, General (MFN) column, route <code>ANY-&gt;US</code>. <span class="lit">lit</span> = updated within <span id="maxage"></span> days; <span class="dark">dark</span> = older (see staleness guidance). Read through a public RPC; no wallet needed.</p>
   </section>
   <section class="panel">
+    <h2>Search the full US tariff schedule</h2>
+    <div class="kv" id="htsMeta"></div>
+    <input id="q" type="search" placeholder="HTS code (8703.80) or words (copper wire)" disabled autocomplete="off">
+    <p class="small" id="htsCount"></p>
+    <table><thead><tr><th>HTS</th><th>Description</th><th>General rate</th><th>Chapter 99 extra duty</th><th>On-chain</th></tr></thead>
+      <tbody id="htsRows"></tbody></table>
+    <p class="small">The extra duties shown are Section 301 (China) and Section 232 (steel, aluminum, copper) only. They exclude AD/CVD, IEEPA/reciprocal duties, exclusions and quotas (<a href="https://github.com/fitzyracing1/space-money/blob/main/docs/hts-coverage.md" target="_blank" rel="noopener noreferrer">coverage notes</a>). <b>On-chain</b> shows the live TariffOracle rate where one exists. Every other line is part of the Merkle dataset (<a href="https://github.com/fitzyracing1/space-money/blob/main/docs/gas-plan.md" target="_blank" rel="noopener noreferrer">gas plan</a>), which is not yet published on-chain. Search runs in your browser and sends no data anywhere. This is not legal advice; check CBP/USITC before you file.</p>
+  </section>
+  <section class="panel">
     <h2>Read it from code</h2>
     <p class="small">Oracle (live): <a id="oracleLink" target="_blank" rel="noopener noreferrer"></a><br>
     <code>getRate(string route, string hsCode) → (uint16 bps, uint64 updatedAt)</code>, e.g. <code>getRate("ANY->US","9005.80.40")</code>.<br>
@@ -47,7 +56,8 @@ code{word-break:break-all}
   </section>
 </main>
 <footer><p>No data is collected. <a href="./">Sepolia demo</a> · <a href="mint.html?v=6">mint</a> · <a href="deploy.html?v=6">deploy</a></p></footer>
-<script type="module" src="feed.js?v=7"></script>
+<script type="module" src="feed.js?v=8"></script>
+<script type="module" src="hts-search.js?v=8"></script>
 <script type="module" src="watch.js?v=6"></script>
 </body>
 </html>

@@ -57,6 +57,7 @@ async function readFrom(p, O, desc) {
   $("rates").innerHTML = rows.map((r) => { const ageD = (now - r.at) / 86400, lit = ageD <= MAX_AGE_DAYS;
     return `<tr><td><code>${esc(r.c)}</code></td><td>${(r.bps / 100).toFixed(2)}% <span class="small">(${r.bps} bps)</span></td><td class="small">${esc(desc[r.c] || "")}</td>` +
       `<td class="small">${new Date(r.at * 1000).toISOString().slice(0, 10)}</td><td class="${lit ? "lit" : "dark"}">${lit ? "lit" : "dark"}</td></tr>`; }).join("") || `<tr><td colspan="5">No rates published.</td></tr>`;
+  window.dispatchEvent(new CustomEvent("tariff-onchain", { detail: { rates: new Map(rows.map((r) => [r.c, r])), maxAge: MAX_AGE_DAYS } }));
   $("meta").innerHTML = `${rows.length} rates live on <a href="${SCAN}/address/${O}" target="_blank" rel="noopener noreferrer">TariffOracle</a> at block ${head.toLocaleString()}.`;
 }
 
