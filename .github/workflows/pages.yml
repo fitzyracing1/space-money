@@ -25,6 +25,7 @@ jobs:
           cp deployments/*.json _site/deployments/
           cp data/hts_sample.csv _site/data/
           cp -r data/hts _site/data/
+          cp -r data/landed _site/data/
           touch _site/.nojekyll
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
