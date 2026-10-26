@@ -109,3 +109,11 @@ MIT © 2026 Joshua Almeida
 - [docs/TFS-1a.md](docs/TFS-1a.md): a backward-compatible extension for specific and compound rates. The reference `src/TariffFeedV2.sol` is not deployed.
 - [docs/gas-plan.md](docs/gas-plan.md): a cost comparison. It recommends one Merkle root per revision on mainnet (`scripts/hts_merkle.py`).
 - Search the full schedule in the browser on the [feed page](https://fitzyracing1.github.io/space-money/feed.html).
+
+## Plans
+
+This project is free, and its license stays as is. Support it through [GitHub Sponsors](https://github.com/sponsors/fitzyracing1):
+
+- **Free**: use the code, community support.
+- **Pro ($49/month)**: priority issues and support.
+- **Team ($199/month)**: priority support for your team plus early access.
